@@ -1,82 +1,126 @@
-# Lightweight React Template for KAVIA
+# Recipe Explorer Frontend (React)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+This frontend is a lightweight React app for browsing, searching, and viewing recipes. It uses an **Ocean Professional** visual theme and is designed to be backend-ready while working fully with local placeholder data.
 
-## Features
+## Tech Stack
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- React 18 + `react-scripts`
+- Vanilla CSS (no UI framework)
+- Hash-based client-side routing (no extra router dependency)
 
 ## Getting Started
 
-In the project directory, you can run:
+From the `frontend` directory:
 
-### `npm start`
-
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+```bash
+npm install
+npm start
 ```
 
-### Components
+This runs the app in development mode.
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+- App URL: http://localhost:3000
+- The app uses hash-based routes:
+  - `#/` – recipe list
+  - `#/recipe/:id` – recipe detail (e.g. `#/recipe/1`)
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+## Features
 
-## Learn More
+- Top navigation with app title and search
+- Sidebar categories (Breakfast, Lunch, Dinner, Dessert, Vegan, Quick & Easy, All)
+- Recipe list with:
+  - Responsive grid
+  - Client-side **search** (by title and tags)
+  - Category **filters**
+- Recipe detail view with:
+  - Hero image
+  - Metadata (category, cook time)
+  - Ingredients list
+  - Step-by-step instructions
+- Ocean Professional theme:
+  - Primary `#2563EB`
+  - Secondary `#F59E0B`
+  - Error `#EF4444`
+  - Background `#f9fafb`
+  - Surface `#ffffff`
+  - Text `#111827`
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Data & Routing
 
-### Code Splitting
+All recipes are stored locally in:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `src/data/recipes.js`
 
-### Analyzing the Bundle Size
+The app uses **hash routing** to avoid adding new dependencies:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `#/` shows the recipe list
+- `#/recipe/:id` shows the recipe detail for the given `id`
 
-### Making a Progressive Web App
+This keeps the preview working without a backend.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Environment Variables
 
-### Advanced Configuration
+Environment variables are accessed via `process.env` for future backend integration. Currently, the UI uses **only placeholder data**, but the following variables are wired for future use:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `REACT_APP_API_BASE`
+- `REACT_APP_BACKEND_URL`
+- `REACT_APP_FRONTEND_URL`
+- `REACT_APP_WS_URL`
+- `REACT_APP_NODE_ENV`
+- `REACT_APP_NEXT_TELEMETRY_DISABLED`
+- `REACT_APP_ENABLE_SOURCE_MAPS`
+- `REACT_APP_PORT`
+- `REACT_APP_TRUST_PROXY`
+- `REACT_APP_LOG_LEVEL`
+- `REACT_APP_HEALTHCHECK_PATH`
+- `REACT_APP_FEATURE_FLAGS`
+- `REACT_APP_EXPERIMENTS_ENABLED`
 
-### Deployment
+The helper `getApiBase` in `src/App.js` exposes `REACT_APP_API_BASE`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```js
+import { getApiBase } from './App';
 
-### `npm run build` fails to minify
+const apiBase = getApiBase(); // null if not configured
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+If `REACT_APP_API_BASE` is not set, the footer explicitly shows that the app is using local placeholder data.
+
+> **Note:** Environment variables should be set in an `.env` file at the project root and must be prefixed with `REACT_APP_` to be visible in the browser environment.
+
+## Theming
+
+Theme tokens are defined in:
+
+- `src/App.css` — CSS variables and component styling
+- `src/theme.js` — small helper with theme colors for JS
+
+You can import and use the theme object:
+
+```js
+import { getTheme } from './theme';
+
+const theme = getTheme();
+console.log(theme.primary); // "#2563EB"
+```
+
+## Testing Hooks
+
+The app provides `data-testid` attributes for easier testing:
+
+- Search input: `data-testid="search-input"`
+- Category filters: `data-testid="category-<Name>"` (e.g. `category-Breakfast`)
+- Recipe cards: `data-testid="recipe-card-<id>"`
+- Recipe detail title: `data-testid="recipe-detail-title"`
+
+Standard CRA testing setup is available via:
+
+```bash
+npm test
+```
+
+## Notes
+
+- The app runs on **port 3000** via `react-scripts start`.
+- All data is currently in-memory; wiring to a real backend should use the configured `REACT_APP_*` variables.
+- Routing is intentionally implemented using the URL hash to keep the dependency footprint small.
